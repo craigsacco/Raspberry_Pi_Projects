@@ -1,3 +1,6 @@
 [submodule "Libraries/Adafruit_Python_GPIO"]
 	path = Libraries/Adafruit_Python_GPIO
 	url = https://github.com/adafruit/Adafruit_Python_GPIO.git
+[submodule "Libraries/Adafruit_Python_PureIO"]
+	path = Libraries/Adafruit_Python_PureIO
+	url = https://github.com/adafruit/Adafruit_Python_PureIO.git
