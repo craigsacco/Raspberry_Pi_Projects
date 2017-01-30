@@ -26,6 +26,8 @@ class MAX127(object):
         self._i2c = i2c or I2C
         self._busnum = busnum or self._i2c.get_default_bus()
         self._device = self._i2c.get_i2c_device(self._address, self._busnum, **kwargs)
+        # NOTE: this driver requires additional methods not provided by the
+        # Adafruit runtime libraries
         AdafruitOverrides.add_i2c_device_overrides(self._device)
         AdafruitOverrides.add_smbus_overrides(self._device._bus)
 
@@ -39,8 +41,7 @@ class MAX127(object):
         self.send_control_byte(MAX127.CTL_OP_POWERDOWN_FULL)
 
     def start_conversion(self, channel, range=False, bipolar=False):
-        self.send_control_byte(MAX127.CTL_START |
-                               (channel << MAX127.CTL_SELx_SHIFT) |
+        self.send_control_byte((channel << MAX127.CTL_SELx_SHIFT) |
                                (MAX127.CTL_RANGE if range else 0) |
                                (MAX127.CTL_BIPOLAR if bipolar else 0) |
                                MAX127.CTL_OP_NORMAL)
