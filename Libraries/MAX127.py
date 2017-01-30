@@ -46,7 +46,6 @@ class MAX127(object):
             byte |= MAX127.CTL_RANGE
         if bipolar:
             byte |= MAX127.CTL_BIPOLAR
-        print byte
         self.send_control_byte(byte)
 
     def get_adc_value(self, bipolar=False):
@@ -59,10 +58,8 @@ class MAX127(object):
 
     def get_voltage(self, range=False, bipolar=False):
         value = self.get_adc_value(bipolar)
-        print value
         voltage = (value * MAX127.ADC_REFERENCE) / \
                   (MAX127.ADC_MAX_VALUE >> (1 if bipolar else 0))
         if range:
             voltage = (voltage * 2.0)
-        print voltage
         return voltage

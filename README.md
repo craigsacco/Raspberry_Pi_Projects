@@ -15,17 +15,6 @@ to members of the Invetech Software Resource Group
   * Mount using the following command: `sshfs -o nonempty pi@ip-of-rpi:/home/pi /path/to/mount`
 * Install *PyCharm* via GetDeb (http://www.getdeb.net/software/pycharm)
 
-# Raspbian Lite Setup
-
-* It is recommended that you install *i2c-tools* from APT
-* The following should be configured through *raspi-config*:
-  * Enable I2C
-  * Enable SPI
-  * Enable SSH
-  * Expand filesystem
-  * **DO NOT** disable the UART (or else the serial console will no longer
-   work)
-
 # Connect using a Serial Console
 
 * Start PuTTY and setup a session with the following settings:
@@ -35,3 +24,14 @@ to members of the Invetech Software Resource Group
 * Through PuTTY, login with the following credentials:
   * Username: pi
   * Password: raspberry
+
+# Raspbian Lite Setup
+
+* It is recommended that you install *i2c-tools* via APT
+* The following should be configured through *raspi-config*:
+  * Enable I2C
+  * Enable SPI
+  * Enable SSH
+  * Expand filesystem
+  * **DO NOT** disable the UART (or else the serial console will no longer
+   work)
