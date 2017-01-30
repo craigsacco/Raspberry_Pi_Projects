@@ -41,19 +41,28 @@ class MAX127(object):
         self.send_control_byte(MAX127.CTL_OP_POWERDOWN_FULL)
 
     def start_conversion(self, channel, range=False, bipolar=False):
-        self.send_control_byte((channel << MAX127.CTL_SELx_SHIFT) |
-                               (MAX127.CTL_RANGE if range else 0) |
-                               (MAX127.CTL_BIPOLAR if bipolar else 0) |
-                               MAX127.CTL_OP_NORMAL)
+        byte = (channel << MAX127.CTL_SELx_SHIFT) | MAX127.CTL_OP_NORMAL
+        if range:
+            byte |= MAX127.CTL_RANGE
+        if bipolar:
+            byte |= MAX127.CTL_BIPOLAR
+        print byte
+        self.send_control_byte(byte)
 
-    def get_adc_value(self):
-        return (self._device.readRawU16BE() >> 4)
+    def get_adc_value(self, bipolar=False):
+        value = 0
+        if bipolar:
+            value = self._device.readRawS16BE()
+        else:
+            value = self._device.readRawU16BE()
+        return (value >> 4)
 
     def get_voltage(self, range=False, bipolar=False):
-        value = self.get_adc_value()
-        voltage = (value * MAX127.ADC_REFERENCE) / MAX127.ADC_MAX_VALUE
-        if bipolar:
-            voltage = (voltage * 2.0) - MAX127.ADC_REFERENCE
+        value = self.get_adc_value(bipolar)
+        print value
+        voltage = (value * MAX127.ADC_REFERENCE) / \
+                  (MAX127.ADC_MAX_VALUE >> (1 if bipolar else 0))
         if range:
             voltage = (voltage * 2.0)
+        print voltage
         return voltage

@@ -18,9 +18,11 @@ class LM35OnMAX127(object):
         self._channel = channel
 
     def get_temperature(self):
+        # FIXME: should be using bipolar conversion, but I cannot seem to
+        # FIXME: get the expected transfer function
         self._adc.start_conversion(channel=self._channel, bipolar=False)
         voltage = self._adc.get_voltage(bipolar=False)
-        temperature = (voltage - LM35OnMAX127.OFFSET_V_0C) /\
+        temperature = (voltage - LM35OnMAX127.OFFSET_V_0C) / \
                       LM35OnMAX127.GAIN_VpC
         return temperature
 
@@ -35,8 +37,8 @@ class HIH3610OnMAX127(object):
         self._channel = channel
 
     def get_humidity(self):
-        self._adc.start_conversion(channel=self._channel, bipolar=False)
-        voltage = self._adc.get_voltage(bipolar=False)
+        self._adc.start_conversion(channel=self._channel)
+        voltage = self._adc.get_voltage()
         humidity = (voltage - HIH3610OnMAX127.OFFSET_V_0RHpc) / \
                    HIH3610OnMAX127.GAIN_VpRHpc
         return humidity
