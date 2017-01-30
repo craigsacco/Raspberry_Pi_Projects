@@ -1,4 +1,3 @@
-import Adafruit_GPIO as GPIO
 import Adafruit_GPIO.I2C as I2C
 
 class DS1624(object):
