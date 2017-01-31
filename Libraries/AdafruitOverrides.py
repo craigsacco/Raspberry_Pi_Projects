@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import types
 
 def add_i2c_device_overrides(device):

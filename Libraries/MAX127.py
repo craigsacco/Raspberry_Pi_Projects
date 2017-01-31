@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import Adafruit_GPIO.I2C as I2C
 import AdafruitOverrides
 
@@ -46,20 +48,27 @@ class MAX127(object):
             byte |= MAX127.CTL_RANGE
         if bipolar:
             byte |= MAX127.CTL_BIPOLAR
+        self._channel = channel
+        self._range = range
+        self._bipolar = bipolar
         self.send_control_byte(byte)
 
-    def get_adc_value(self, bipolar=False):
+    def get_data(self):
         value = 0
-        if bipolar:
-            value = self._device.readRawS16BE()
+        if self._bipolar:
+            value = (self._device.readRawS16BE() >> 4)
         else:
-            value = self._device.readRawU16BE()
-        return (value >> 4)
-
-    def get_voltage(self, range=False, bipolar=False):
-        value = self.get_adc_value(bipolar)
+            value = (self._device.readRawU16BE() >> 4)
         voltage = (value * MAX127.ADC_REFERENCE) / \
-                  (MAX127.ADC_MAX_VALUE >> (1 if bipolar else 0))
-        if range:
+                  (MAX127.ADC_MAX_VALUE >> (1 if self._bipolar else 0))
+        if self._range:
             voltage = (voltage * 2.0)
-        return voltage
+        return { "value": value, "voltage": voltage,
+                 "channel": self._channel, "range": self._range,
+                 "bipolar": self._bipolar }
+
+    def get_value(self):
+        return self.get_data()["value"]
+
+    def get_voltage(self):
+        return self.get_data()["voltage"]

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import Adafruit_GPIO.I2C as I2C
 
 class DS1624(object):
@@ -29,9 +31,15 @@ class DS1624(object):
     def stop_conversions(self):
         self._device.writeRaw8(DS1624.CMD_STOP_CONVERSION)
 
+    def get_data(self):
+        value = self._device.readS16BE(DS1624.CMD_READ_TEMPERATURE)
+        temperature = value * DS1624.CONVERSION_FACTOR
+        return { "value": value, "temperature": temperature,
+                 "temperature_uom": "°C" }
+
     def get_temperature_raw(self):
-        return self._device.readS16BE(DS1624.CMD_READ_TEMPERATURE)
+        return self.get_data()["value"]
 
     def get_temperature(self):
-        value = self.get_temperature_raw()
-        return value * DS1624.CONVERSION_FACTOR
+        return self.get_data()["temperature"]
+

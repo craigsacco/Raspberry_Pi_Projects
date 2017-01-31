@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import sys
 sys.path.insert(1, 'Libraries')
 sys.path.insert(1, 'Libraries/Adafruit_Python_PureIO')
@@ -6,42 +9,8 @@ sys.path.insert(1, 'Libraries/Adafruit_Python_GPIO')
 import time
 from DS1624 import DS1624
 from MAX127 import MAX127
-
-
-class LM35OnMAX127(object):
-
-    OFFSET_V_0C = 0.0
-    GAIN_VpC = 0.01
-
-    def __init__(self, adc, channel):
-        self._adc = adc
-        self._channel = channel
-
-    def get_temperature(self):
-        # FIXME: should be using bipolar conversion, but I cannot seem to
-        # FIXME: get the expected transfer function
-        self._adc.start_conversion(channel=self._channel, bipolar=False)
-        voltage = self._adc.get_voltage(bipolar=False)
-        temperature = (voltage - LM35OnMAX127.OFFSET_V_0C) / \
-                      LM35OnMAX127.GAIN_VpC
-        return temperature
-
-
-class HIH3610OnMAX127(object):
-
-    OFFSET_V_0RHpc = 0.958
-    GAIN_VpRHpc = 0.03068
-
-    def __init__(self, adc, channel):
-        self._adc = adc
-        self._channel = channel
-
-    def get_humidity(self):
-        self._adc.start_conversion(channel=self._channel)
-        voltage = self._adc.get_voltage()
-        humidity = (voltage - HIH3610OnMAX127.OFFSET_V_0RHpc) / \
-                   HIH3610OnMAX127.GAIN_VpRHpc
-        return humidity
+from LM35OnMAX127 import LM35OnMAX127
+from HIH3610OnMAX127 import HIH3610OnMAX127
 
 
 def main():
