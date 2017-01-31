@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <title>Sensor Server</title>
+    <style type="text/css">
+        TABLE {
+            border-collapse: collapse;
+            font-size: 10pt;
+        }
+        THEAD {
+            font-weight: bold;
+            text-align: center;
+        }
+        TD {
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body onload="updateData()">
+
+<script>
+    function updateData()
+    {
+        request = new XMLHttpRequest();
+        request.onreadystatechange = function()
+        {
+            if (request.readyState == 4 && request.status == 200)
+            {
+                response = JSON.parse(request.responseText);
+                document.getElementById("ds1624").innerHTML =
+                    response.ds1624.temperature.toFixed(2) + " " + response.ds1624.temperature_uom
+                document.getElementById("lm35_1").innerHTML =
+                    response.lm35_1.temperature.toFixed(2) + " " + response.lm35_1.temperature_uom
+                document.getElementById("lm35_2").innerHTML =
+                    response.lm35_2.temperature.toFixed(2) + " " + response.lm35_2.temperature_uom
+                document.getElementById("hih3610").innerHTML =
+                    response.hih3610.humidity.toFixed(2) + " " + response.hih3610.humidity_uom
+            }
+        }
+        request.open("GET", "/Data", true);
+        request.send();
+    }
+
+    var intervalID = setInterval(function(){updateData();}, 5000);
+</script>
+
+<table>
+    <thead>
+    <tr>
+        <td>Sensor</td>
+        <td>Reading</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>DS1624</td>
+        <td id="ds1624"></td>
+    </tr>
+    <tr>
+        <td>LM35 #1</td>
+        <td id="lm35_1"></td>
+    </tr>
+    <tr>
+        <td>LM35 #2</td>
+        <td id="lm35_2"></td>
+    </tr>
+    <tr>
+        <td>HIH3610</td>
+        <td id="hih3610"></td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+
+</html>
