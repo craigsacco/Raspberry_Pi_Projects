@@ -8,10 +8,10 @@ sys.path.insert(1, 'Libraries/Adafruit_Python_GPIO')
 sys.path.insert(1, 'Libraries/webpy')
 
 import time, web, json, threading
-from DS1624 import DS1624
-from MAX127 import MAX127
-from LM35OnMAX127 import LM35OnMAX127
-from HIH3610OnMAX127 import HIH3610OnMAX127
+from Drivers.DS1624 import DS1624
+from Drivers.MAX127 import MAX127
+from Drivers.LM35OnMAX127 import LM35OnMAX127
+from Drivers.HIH3610OnMAX127 import HIH3610OnMAX127
 
 
 class StationServer(object):
