@@ -8,10 +8,12 @@ sys.path.insert(1, 'Libraries/Adafruit_Python_GPIO')
 sys.path.insert(1, 'Libraries/webpy')
 
 import time, web, json, threading
+from Adafruit_GPIO import GPIO
 from Drivers.DS1624 import DS1624
 from Drivers.MAX127 import MAX127
 from Drivers.LM35OnMAX127 import LM35OnMAX127
 from Drivers.HIH3610OnMAX127 import HIH3610OnMAX127
+from Drivers.MS5534 import MS5534
 
 
 class StationServer(object):
@@ -26,7 +28,8 @@ class StationServer(object):
             StationServer.DATA_MUTEX.acquire()
             data = StationServer.DATA
             StationServer.DATA_MUTEX.release()
-            return json.dumps(data)
+            return json.dumps(data, sort_keys=True,
+                              indent=4, separators=(',', ': '))
 
     class UIService:
 
@@ -51,9 +54,11 @@ class StationServer(object):
         self._lm35_1 = LM35OnMAX127(adc=self._max127, channel=0)
         self._lm35_2 = LM35OnMAX127(adc=self._max127, channel=1)
         self._hih3610 = HIH3610OnMAX127(adc=self._max127, channel=2)
+        self._ms5534 = MS5534(sclk=22, miso=27, mosi=17)
 
     def start_devices(self):
         self._ds1624.start_conversions()
+        self._ms5534.send_reset()
 
     def stop_devices(self):
         self._ds1624.stop_conversions()
@@ -66,6 +71,7 @@ class StationServer(object):
             "lm35_1": self._lm35_1.get_data(),
             "lm35_2": self._lm35_2.get_data(),
             "hih3610": self._hih3610.get_data(),
+            "ms5534": self._ms5534.get_data(),
         }
         StationServer.DATA_MUTEX.release()
 

@@ -2,6 +2,7 @@
 
 import Adafruit_GPIO.I2C as I2C
 
+
 class DS1624(object):
 
     CMD_READ_TEMPERATURE = 0xAA

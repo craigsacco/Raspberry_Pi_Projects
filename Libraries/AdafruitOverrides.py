@@ -2,6 +2,7 @@
 
 import types
 
+
 def add_i2c_device_overrides(device):
 
     def _read_raw_s16(self, little_endian=True):
@@ -29,6 +30,7 @@ def add_i2c_device_overrides(device):
     device.readRawU16 = types.MethodType(_read_raw_u16, device)
     device.readRawU16BE = types.MethodType(_read_raw_u16be, device)
     return device
+
 
 def add_smbus_overrides(smbus):
 
