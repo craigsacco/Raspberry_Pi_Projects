@@ -7,6 +7,9 @@
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
     <title>Sensor Server</title>
     <style type="text/css">
+        BODY {
+            font-family: Helvetica;
+        }
         TABLE {
             border-collapse: collapse;
             font-size: 10pt;
@@ -16,7 +19,14 @@
             text-align: center;
         }
         TD {
+            border: black 1px solid;
             padding: 5px;
+        }
+        PRE {
+            font-size: 8pt;
+        }
+        .header {
+            background-color: #C0C0C0; /* light grey */
         }
     </style>
 </head>
@@ -24,6 +34,22 @@
 <body onload="updateData()">
 
 <script>
+    function decompose_json_object(object)
+    {
+        result = "<pre>"
+        first = true;
+        for (var key in object) {
+            if (first) {
+                first = false;
+            } else {
+                result += "\n";
+            }
+            result += key + " = " + object[key];
+        }
+        result += "</pre>";
+        return result;
+    }
+
     function updateData()
     {
         request = new XMLHttpRequest();
@@ -32,18 +58,38 @@
             if (request.readyState == 4 && request.status == 200)
             {
                 response = JSON.parse(request.responseText);
+
+                // DS1624
                 document.getElementById("ds1624").innerHTML =
                     response.ds1624.temperature.toFixed(2) + " " + response.ds1624.temperature_uom
+                document.getElementById("ds1624_data").innerHTML =
+                    decompose_json_object(response.ds1624)
+
+                // LM35 #1
                 document.getElementById("lm35_1").innerHTML =
                     response.lm35_1.temperature.toFixed(2) + " " + response.lm35_1.temperature_uom
+                document.getElementById("lm35_1_data").innerHTML =
+                    decompose_json_object(response.lm35_1)
+
+                // LM35 #2
                 document.getElementById("lm35_2").innerHTML =
                     response.lm35_2.temperature.toFixed(2) + " " + response.lm35_2.temperature_uom
+                document.getElementById("lm35_2_data").innerHTML =
+                    decompose_json_object(response.lm35_2)
+
+                // HIH3610
                 document.getElementById("hih3610").innerHTML =
                     response.hih3610.humidity.toFixed(2) + " " + response.hih3610.humidity_uom
+                document.getElementById("hih3610_data").innerHTML =
+                    decompose_json_object(response.hih3610)
+
+                // MS5534
                 document.getElementById("ms5534_p").innerHTML =
                     response.ms5534.pressure.toFixed(2) + " " + response.ms5534.pressure_uom
                 document.getElementById("ms5534_t").innerHTML =
                     response.ms5534.temperature.toFixed(2) + " " + response.ms5534.temperature_uom
+                document.getElementById("ms5534_data").innerHTML =
+                    decompose_json_object(response.ms5534)
             }
         }
         request.open("GET", "/Data", true);
@@ -53,36 +99,43 @@
     var intervalID = setInterval(function(){updateData();}, 5000);
 </script>
 
+<h1>Raspberry Pi Demo - Weather Station</h1>
+
 <table>
     <thead>
-    <tr>
+    <tr class="header">
         <td>Sensor</td>
         <td>Reading</td>
+        <td>Data</td>
     </tr>
     </thead>
     <tbody>
     <tr>
         <td>DS1624</td>
         <td id="ds1624"></td>
+        <td id="ds1624_data"></td>
     </tr>
     <tr>
         <td>LM35 #1</td>
         <td id="lm35_1"></td>
+        <td id="lm35_1_data"></td>
     </tr>
     <tr>
         <td>LM35 #2</td>
         <td id="lm35_2"></td>
+        <td id="lm35_2_data"></td>
     </tr>
     <tr>
         <td>HIH3610</td>
         <td id="hih3610"></td>
+        <td id="hih3610_data"></td>
     </tr>
     <tr>
-        <td>MS5534 (P)</td>
+        <td rowspan="2">MS5534</td>
         <td id="ms5534_p"></td>
+        <td rowspan="2" id="ms5534_data"></td>
     </tr>
     <tr>
-        <td>MS5534 (T)</td>
         <td id="ms5534_t"></td>
     </tr>
     </tbody>
