@@ -40,6 +40,10 @@
                     response.lm35_2.temperature.toFixed(2) + " " + response.lm35_2.temperature_uom
                 document.getElementById("hih3610").innerHTML =
                     response.hih3610.humidity.toFixed(2) + " " + response.hih3610.humidity_uom
+                document.getElementById("ms5534_p").innerHTML =
+                    response.ms5534.pressure.toFixed(2) + " " + response.ms5534.pressure_uom
+                document.getElementById("ms5534_t").innerHTML =
+                    response.ms5534.temperature.toFixed(2) + " " + response.ms5534.temperature_uom
             }
         }
         request.open("GET", "/Data", true);
@@ -72,6 +76,14 @@
     <tr>
         <td>HIH3610</td>
         <td id="hih3610"></td>
+    </tr>
+    <tr>
+        <td>MS5534 (P)</td>
+        <td id="ms5534_p"></td>
+    </tr>
+    <tr>
+        <td>MS5534 (T)</td>
+        <td id="ms5534_t"></td>
     </tr>
     </tbody>
 </table>

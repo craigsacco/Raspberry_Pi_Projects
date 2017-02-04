@@ -14,9 +14,6 @@ class MS5534(object):
     SEQ_PRESSURE_CONVERSION = [True, False, True, False]
     SEQ_TEMPERATURE_CONVERSION = [True, False, False, True]
 
-    class ConversionException(Exception):
-        pass
-
     def __init__(self, sclk, miso, mosi, gpio=None):
         self._gpio = gpio or GPIO.get_platform_gpio()
         self._sclk = sclk
@@ -44,9 +41,7 @@ class MS5534(object):
         return self.get_miso()
 
     def wait_for_conversion_completion(self):
-        result = self._gpio.wait_for_edge_with_timeout(self._miso, GPIO.FALLING, 1000)
-        if result is None:
-            raise MS5534.ConversionException()
+        self._gpio.wait_for_edge(self._miso, GPIO.FALLING)
 
     def send_command_sequence(self, seq):
         # sequence:
@@ -113,34 +108,59 @@ class MS5534(object):
             self.send_bit(False)
 
     def get_data(self):
-        try:
-            pressure_raw = 0#self.perform_pressure_conversion()
-            temperature_raw = 0#self.perform_temperature_conversion()
-            calibration_words = [self.get_calibration_word(i) for i in
-                                 range(len(MS5534.SEQS_CALIBRATION_WORD))]
-            self.send_reset()
-            coefficient1 = (calibration_words[0] >> 1) & 0x7fff
-            coefficient2 = ((calibration_words[2] & 0x3f) << 6) +\
-                           (calibration_words[2] & 0x3f)
-            coefficient3 = (calibration_words[3] >> 6) & 0x3ff
-            coefficient4 = (calibration_words[2] >> 6) & 0x3ff
-            coefficient5 = ((calibration_words[0] & 0x1) << 6) +\
-                           ((calibration_words[1] >> 6) & 0x3ff)
-            coefficient6 = (calibration_words[1] >> 6) & 0x3ff
-            print pressure_raw, temperature_raw, calibration_words
-            return {
-                "pressure_raw": pressure_raw,
-                "temperature_raw": temperature_raw,
-                "calibration1": calibration_words[0],
-                "calibration2": calibration_words[1],
-                "calibration3": calibration_words[2],
-                "calibration4": calibration_words[3],
-                "coefficient1": coefficient1,
-                "coefficient2": coefficient2,
-                "coefficient3": coefficient3,
-                "coefficient4": coefficient4,
-                "coefficient5": coefficient5,
-                "coefficient6": coefficient6,
-            }
-        except MS5534.ConversionException:
-            return {}
+        pressure_raw = self.perform_pressure_conversion()
+        temperature_raw = self.perform_temperature_conversion()
+        equ_w1, equ_w2, equ_w3, equ_w4 =\
+            [self.get_calibration_word(i) for i in
+             range(len(MS5534.SEQS_CALIBRATION_WORD))]
+        self.send_reset()
+        equ_c1 = (equ_w1 >> 1) & 0x7fff
+        equ_c2 = ((equ_w3 & 0x3f) << 6) + (equ_w4 & 0x3f)
+        equ_c3 = (equ_w4 >> 6) & 0x3ff
+        equ_c4 = (equ_w3 >> 6) & 0x3ff
+        equ_c5 = ((equ_w1 & 0x1) << 6) + ((equ_w2 >> 6) & 0x3ff)
+        equ_c6 = equ_w2 & 0x3f
+        equ_ut1 = (8.0 * equ_c5) + 20224
+        equ_dt = temperature_raw - equ_ut1
+        equ_temp = 200 + ((equ_dt * (equ_c6 + 50)) / 1024.0)
+        temperature = equ_temp / 10.0
+        equ_off = (equ_c2 * 4.0) + (((equ_c4 - 512) * equ_dt) / 4096.0)
+        equ_sens = equ_c1 + 24576 + ((equ_c3 * equ_dt) / 1024.0)
+        equ_x = ((equ_sens * (pressure_raw - 7168)) / 16384.0) - equ_off
+        equ_p = (equ_x * (10.0 / 32.0)) + 2500
+        pressure = equ_p / 100.0
+        return {
+            "pressure_raw": pressure_raw,
+            "temperature_raw": temperature_raw,
+            "equ_w1": equ_w1,
+            "equ_w2": equ_w2,
+            "equ_w3": equ_w3,
+            "equ_w4": equ_w4,
+            "equ_c1": equ_c1,
+            "equ_c2": equ_c2,
+            "equ_c3": equ_c3,
+            "equ_c4": equ_c4,
+            "equ_c5": equ_c5,
+            "equ_c6": equ_c6,
+            "equ_ut1": equ_ut1,
+            "equ_dt": equ_dt,
+            "equ_temp": equ_temp,
+            "temperature": temperature,
+            "temperature_uom": "°C",
+            "equ_off": equ_off,
+            "equ_sens": equ_sens,
+            "equ_x": equ_x,
+            "equ_p": equ_p,
+            "pressure": pressure,
+            "pressure_uom": "kPa",
+        }
+
+    def get_pressure_only(self):
+        return self.get_data()["pressure"]
+
+    def get_temperature_only(self):
+        return self.get_data()["temperature"]
+
+    def get_pressure_and_temperature(self):
+        data = self.get_data()
+        return [data["pressure"], data["temperature"]]
