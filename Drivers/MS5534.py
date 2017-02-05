@@ -70,7 +70,7 @@ class MS5534(object):
         #  * send a single clock
         self.send_command_sequence(MS5534.SEQS_CALIBRATION_WORD[index])
         self.send_clock()
-        assert self.get_miso() == True
+        #assert self.get_miso() == True
         value = self.get_value(16)
         self.send_clock()
         return value
@@ -85,7 +85,7 @@ class MS5534(object):
         self.send_command_sequence(seq)
         self.send_clock()
         self.send_clock()
-        assert self.get_miso() == True
+        #assert self.get_miso() == True
         self.wait_for_conversion_completion()
         value = self.get_value(16)
         self.send_clock()

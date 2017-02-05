@@ -10,3 +10,9 @@
 [submodule "Libraries/Adafruit_Python_CharLCD"]
 	path = Libraries/Adafruit_Python_CharLCD
 	url = https://github.com/adafruit/Adafruit_Python_CharLCD.git
+[submodule "Libraries/gps3"]
+	path = Libraries/gps3
+	url = https://github.com/wadda/gps3.git
+[submodule "Libraries/geopy"]
+	path = Libraries/geopy
+	url = https://github.com/geopy/geopy.git

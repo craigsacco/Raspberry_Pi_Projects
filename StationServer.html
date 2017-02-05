@@ -55,41 +55,56 @@
         request = new XMLHttpRequest();
         request.onreadystatechange = function()
         {
-            if (request.readyState == 4 && request.status == 200)
+            if (request.readyState == 4)
             {
-                response = JSON.parse(request.responseText);
+                if (request.status == 200) {
+                    response = JSON.parse(request.responseText);
 
-                // DS1624
-                document.getElementById("ds1624").innerHTML =
-                    response.ds1624.temperature.toFixed(2) + " " + response.ds1624.temperature_uom
-                document.getElementById("ds1624_data").innerHTML =
-                    decompose_json_object(response.ds1624)
+                    // DS1624
+                    document.getElementById("ds1624").innerHTML =
+                        response.ds1624.temperature.toFixed(2) + " " + response.ds1624.temperature_uom;
+                    document.getElementById("ds1624_data").innerHTML =
+                        decompose_json_object(response.ds1624);
 
-                // LM35 #1
-                document.getElementById("lm35_1").innerHTML =
-                    response.lm35_1.temperature.toFixed(2) + " " + response.lm35_1.temperature_uom
-                document.getElementById("lm35_1_data").innerHTML =
-                    decompose_json_object(response.lm35_1)
+                    // LM35 #1
+                    document.getElementById("lm35_1").innerHTML =
+                        response.lm35_1.temperature.toFixed(2) + " " + response.lm35_1.temperature_uom;
+                    document.getElementById("lm35_1_data").innerHTML =
+                        decompose_json_object(response.lm35_1);
 
-                // LM35 #2
-                document.getElementById("lm35_2").innerHTML =
-                    response.lm35_2.temperature.toFixed(2) + " " + response.lm35_2.temperature_uom
-                document.getElementById("lm35_2_data").innerHTML =
-                    decompose_json_object(response.lm35_2)
+                    // LM35 #2
+                    document.getElementById("lm35_2").innerHTML =
+                        response.lm35_2.temperature.toFixed(2) + " " + response.lm35_2.temperature_uom;
+                    document.getElementById("lm35_2_data").innerHTML =
+                        decompose_json_object(response.lm35_2);
 
-                // HIH3610
-                document.getElementById("hih3610").innerHTML =
-                    response.hih3610.humidity.toFixed(2) + " " + response.hih3610.humidity_uom
-                document.getElementById("hih3610_data").innerHTML =
-                    decompose_json_object(response.hih3610)
+                    // HIH3610
+                    document.getElementById("hih3610").innerHTML =
+                        response.hih3610.humidity.toFixed(2) + " " + response.hih3610.humidity_uom;
+                    document.getElementById("hih3610_data").innerHTML =
+                        decompose_json_object(response.hih3610);
 
-                // MS5534
-                document.getElementById("ms5534_p").innerHTML =
-                    response.ms5534.pressure.toFixed(2) + " " + response.ms5534.pressure_uom
-                document.getElementById("ms5534_t").innerHTML =
-                    response.ms5534.temperature.toFixed(2) + " " + response.ms5534.temperature_uom
-                document.getElementById("ms5534_data").innerHTML =
-                    decompose_json_object(response.ms5534)
+                    // MS5534
+                    document.getElementById("ms5534_p").innerHTML =
+                        response.ms5534.pressure.toFixed(2) + " " + response.ms5534.pressure_uom;
+                    document.getElementById("ms5534_t").innerHTML =
+                        response.ms5534.temperature.toFixed(2) + " " + response.ms5534.temperature_uom;
+                    document.getElementById("ms5534_data").innerHTML =
+                        decompose_json_object(response.ms5534);
+                } else {
+                    // DS1624
+                    document.getElementById("ds1624").innerHTML = "N/A";
+                    document.getElementById("ds1624_data").innerHTML = "No data";
+                    document.getElementById("lm35_1").innerHTML = "N/A";
+                    document.getElementById("lm35_1_data").innerHTML = "No data";
+                    document.getElementById("lm35_2").innerHTML = "N/A";
+                    document.getElementById("lm35_2_data").innerHTML = "No data";
+                    document.getElementById("hih3610").innerHTML = "N/A";
+                    document.getElementById("hih3610_data").innerHTML = "No data";
+                    document.getElementById("ms5534_p").innerHTML = "N/A";
+                    document.getElementById("ms5534_t").innerHTML = "N/A";
+                    document.getElementById("ms5534_data").innerHTML = "No data";
+                }
             }
         }
         request.open("GET", "/Data", true);

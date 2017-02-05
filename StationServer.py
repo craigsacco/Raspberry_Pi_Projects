@@ -6,23 +6,30 @@ sys.path.insert(1, 'Libraries')
 sys.path.insert(1, 'Libraries/Adafruit_Python_PureIO')
 sys.path.insert(1, 'Libraries/Adafruit_Python_GPIO')
 sys.path.insert(1, 'Libraries/Adafruit_Python_CharLCD')
+sys.path.insert(1, 'Libraries/geopy')
+sys.path.insert(1, 'Libraries/gps3')
 sys.path.insert(1, 'Libraries/webpy')
 
 import time, web, json, threading
 from Adafruit_CharLCD import SELECT as LCD_BTN_SELECT
 from Adafruit_CharLCD.Adafruit_CharLCD import Adafruit_CharLCDPlate
+from gps3.gps3 import GPSDSocket
+from geopy.format import format_degrees
 from Drivers.DS1624 import DS1624
 from Drivers.MAX127 import MAX127
 from Drivers.LM35OnMAX127 import LM35OnMAX127
 from Drivers.HIH3610OnMAX127 import HIH3610OnMAX127
 from Drivers.MS5534 import MS5534
 from Drivers.SimpleLED import SimpleLED
+from Drivers.DS1803 import DS1803
 
 
 class StationServer(object):
 
     DATA = {}
     DATA_MUTEX = threading.Lock()
+    GPS = {}
+    GPS_MUTEX = threading.Lock()
 
     class DataService:
 
@@ -53,7 +60,8 @@ class StationServer(object):
     DISPMODE_PRESSURE_HUMIDITY = 0
     DISPMODE_TEMPERATURE_ANALOG = 1
     DISPMODE_TEMPERATURE_DIGITAL = 2
-    DISPMODE_COUNT = 3
+    DISPMODE_GPS = 3
+    DISPMODE_COUNT = 4
 
     def __init__(self):
         self._server = web.application(StationServer.URLS, locals())
@@ -69,26 +77,35 @@ class StationServer(object):
         self._leds = [self._led_1, self._led_2, self._led_3]
         self._lcdplate = Adafruit_CharLCDPlate(address=0x20)
         self._dispmode = StationServer.DISPMODE_PRESSURE_HUMIDITY
+        self._pots = DS1803(address=0x29, variant=DS1803.VARIANT_10K)
+        self._gps = GPSDSocket()
 
     def start_devices(self):
         self._ds1624.start_conversions()
         self._ms5534.send_reset()
         self._lcdplate.clear()
+        self._gps.connect()
+        self._gps.watch(gpsd_protocol="json", devicepath="/dev/ttyUSB0")
 
     def stop_devices(self):
         self._ds1624.stop_conversions()
         self._max127.power_down()
         self._lcdplate.clear()
+        self._lcdplate.set_color(0.0, 0.0, 0.0)
+        self._gps.close()
 
     def update_data(self):
         StationServer.DATA_MUTEX.acquire()
+        StationServer.GPS_MUTEX.acquire()
         StationServer.DATA = {
             "ds1624": self._ds1624.get_data(),
             "lm35_1": self._lm35_1.get_data(),
             "lm35_2": self._lm35_2.get_data(),
             "hih3610": self._hih3610.get_data(),
             "ms5534": self._ms5534.get_data(),
+            "gps": StationServer.GPS,
         }
+        StationServer.GPS_MUTEX.release()
         StationServer.DATA_MUTEX.release()
         self.update_display()
 
@@ -134,6 +151,15 @@ class StationServer(object):
                 StationServer.DATA["ms5534"]["temperature"],
                 StationServer.DATA["ms5534"]["temperature_uom"].encode("ascii", "ignore")
             ))
+        elif self._dispmode == StationServer.DISPMODE_GPS:
+            self._lcdplate.set_color(0.0, 1.0, 0.0)
+            self._lcdplate.set_cursor(0, 0)
+            dms_format = "%(degrees)dd %(minutes)dm %(seconds)ds"
+            latitude = format_degrees(StationServer.DATA["gps"]["TPV"]["lat"], fmt=dms_format)
+            longitude = format_degrees(StationServer.DATA["gps"]["TPV"]["lon"], fmt=dms_format)
+            self._lcdplate.message("La: {0}  ".format(latitude))
+            self._lcdplate.set_cursor(0, 1)
+            self._lcdplate.message("Ln: {0}  ".format(longitude))
 
     def background_acquisition(self):
         print "Started sensor acquisition"
@@ -181,6 +207,34 @@ class StationServer(object):
             led.off()
         print "Stopped LED sequencer"
 
+    def led_dimmer(self):
+        print "Started LED dimmer"
+        pot_resistances = [0, 100, 250, 600, 1500, 4000, 1500,
+                           600, 250, 100]
+        index = 0
+        while self._running:
+            time.sleep(0.1)
+            self._pots.set_both_pots_resistance(pot_resistances[index])
+            index += 1
+            if index == len(pot_resistances):
+                index = 0
+        self._pots.set_both_pots_resistance(0)
+        print "Stopped LED dimmer"
+
+    def gps_acquisition(self):
+        print "Started GPS acquisition"
+        for data in self._gps:
+            if data:
+                packet = json.loads(data)
+                StationServer.GPS_MUTEX.acquire()
+                StationServer.GPS[packet["class"]] = packet
+                StationServer.GPS_MUTEX.release()
+            else:
+                time.sleep(0.1)
+            if not self._running:
+                break
+        print "Stopped GPS acquisition"
+
     def run_server(self):
         self._running = True
         self.start_devices()
@@ -188,12 +242,18 @@ class StationServer(object):
         self._thread1.start()
         self._thread2 = threading.Thread(target=self.led_sequencer)
         self._thread2.start()
+        self._thread3 = threading.Thread(target=self.led_dimmer)
+        self._thread3.start()
+        self._thread4 = threading.Thread(target=self.gps_acquisition)
+        self._thread4.start()
         self._server.run()
 
     def stop_server(self):
         self._running = False
         self._thread1.join()
         self._thread2.join()
+        self._thread3.join()
+        self._thread4.join()
         self._server.stop()
         self.stop_devices()
 
