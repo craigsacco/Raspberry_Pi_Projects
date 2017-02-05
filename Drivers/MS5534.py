@@ -146,13 +146,13 @@ class MS5534(object):
             "equ_dt": equ_dt,
             "equ_temp": equ_temp,
             "temperature": temperature,
-            "temperature_uom": "°C",
+            "temperature_uom": u"°C",
             "equ_off": equ_off,
             "equ_sens": equ_sens,
             "equ_x": equ_x,
             "equ_p": equ_p,
             "pressure": pressure,
-            "pressure_uom": "kPa",
+            "pressure_uom": u"kPa",
         }
 
     def get_pressure_only(self):

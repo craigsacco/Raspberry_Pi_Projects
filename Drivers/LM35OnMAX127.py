@@ -17,7 +17,7 @@ class LM35OnMAX127(object):
         data = self._adc.get_data()
         temperature = (data["voltage"] - LM35OnMAX127.OFFSET_V_0C) / \
                       LM35OnMAX127.GAIN_VpC
-        data.update({ "temperature": temperature, "temperature_uom": "°C" })
+        data.update({ "temperature": temperature, "temperature_uom": u"°C" })
         return data
 
     def get_temperature(self):

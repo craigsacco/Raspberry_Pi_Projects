@@ -36,7 +36,7 @@ class DS1624(object):
         value = self._device.readS16BE(DS1624.CMD_READ_TEMPERATURE)
         temperature = value * DS1624.CONVERSION_FACTOR
         return { "value": value, "temperature": temperature,
-                 "temperature_uom": "°C" }
+                 "temperature_uom": u"°C" }
 
     def get_temperature_raw(self):
         return self.get_data()["value"]

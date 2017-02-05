@@ -7,3 +7,6 @@
 [submodule "Libraries/webpy"]
 	path = Libraries/webpy
 	url = https://github.com/webpy/webpy.git
+[submodule "Libraries/Adafruit_Python_CharLCD"]
+	path = Libraries/Adafruit_Python_CharLCD
+	url = https://github.com/adafruit/Adafruit_Python_CharLCD.git

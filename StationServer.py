@@ -5,10 +5,12 @@ import sys
 sys.path.insert(1, 'Libraries')
 sys.path.insert(1, 'Libraries/Adafruit_Python_PureIO')
 sys.path.insert(1, 'Libraries/Adafruit_Python_GPIO')
+sys.path.insert(1, 'Libraries/Adafruit_Python_CharLCD')
 sys.path.insert(1, 'Libraries/webpy')
 
 import time, web, json, threading
-from Adafruit_GPIO import GPIO
+from Adafruit_CharLCD import SELECT as LCD_BTN_SELECT
+from Adafruit_CharLCD.Adafruit_CharLCD import Adafruit_CharLCDPlate
 from Drivers.DS1624 import DS1624
 from Drivers.MAX127 import MAX127
 from Drivers.LM35OnMAX127 import LM35OnMAX127
@@ -48,6 +50,11 @@ class StationServer(object):
         "/",            UIService,
     )
 
+    DISPMODE_PRESSURE_HUMIDITY = 0
+    DISPMODE_TEMPERATURE_ANALOG = 1
+    DISPMODE_TEMPERATURE_DIGITAL = 2
+    DISPMODE_COUNT = 3
+
     def __init__(self):
         self._server = web.application(StationServer.URLS, locals())
         self._ds1624 = DS1624(address=0x48)
@@ -60,14 +67,18 @@ class StationServer(object):
         self._led_2 = SimpleLED(pin=23)
         self._led_3 = SimpleLED(pin=24)
         self._leds = [self._led_1, self._led_2, self._led_3]
+        self._lcdplate = Adafruit_CharLCDPlate(address=0x20)
+        self._dispmode = StationServer.DISPMODE_PRESSURE_HUMIDITY
 
     def start_devices(self):
         self._ds1624.start_conversions()
         self._ms5534.send_reset()
+        self._lcdplate.clear()
 
     def stop_devices(self):
         self._ds1624.stop_conversions()
         self._max127.power_down()
+        self._lcdplate.clear()
 
     def update_data(self):
         StationServer.DATA_MUTEX.acquire()
@@ -79,6 +90,50 @@ class StationServer(object):
             "ms5534": self._ms5534.get_data(),
         }
         StationServer.DATA_MUTEX.release()
+        self.update_display()
+
+    def update_display(self):
+        if self._lcdplate.is_pressed(LCD_BTN_SELECT):
+            self._dispmode += 1
+            self._lcdplate.clear()
+            if self._dispmode == StationServer.DISPMODE_COUNT:
+                self._dispmode = 0
+        if self._dispmode == StationServer.DISPMODE_PRESSURE_HUMIDITY:
+            self._lcdplate.set_color(0.0, 0.0, 1.0)
+            self._lcdplate.set_cursor(0, 0)
+            self._lcdplate.message("Hum:  {0:.2f} {1} ".format(
+                StationServer.DATA["hih3610"]["humidity"],
+                StationServer.DATA["hih3610"]["humidity_uom"].encode("ascii", "ignore")
+            ))
+            self._lcdplate.set_cursor(0, 1)
+            self._lcdplate.message("Pres: {0:.2f} {1} ".format(
+                StationServer.DATA["ms5534"]["pressure"],
+                StationServer.DATA["ms5534"]["pressure_uom"].encode("ascii", "ignore")
+            ))
+        elif self._dispmode == StationServer.DISPMODE_TEMPERATURE_ANALOG:
+            self._lcdplate.set_color(1.0, 0.0, 0.0)
+            self._lcdplate.set_cursor(0, 0)
+            self._lcdplate.message("Ta1: {0:.2f} {1} ".format(
+                StationServer.DATA["lm35_1"]["temperature"],
+                StationServer.DATA["lm35_1"]["temperature_uom"].encode("ascii", "ignore")
+            ))
+            self._lcdplate.set_cursor(0, 1)
+            self._lcdplate.message("Ta2: {0:.2f} {1} ".format(
+                StationServer.DATA["lm35_2"]["temperature"],
+                StationServer.DATA["lm35_2"]["temperature_uom"].encode("ascii", "ignore")
+            ))
+        elif self._dispmode == StationServer.DISPMODE_TEMPERATURE_DIGITAL:
+            self._lcdplate.set_color(1.0, 1.0, 0.0)
+            self._lcdplate.set_cursor(0, 0)
+            self._lcdplate.message("Tdt: {0:.2f} {1} ".format(
+                StationServer.DATA["ds1624"]["temperature"],
+                StationServer.DATA["ds1624"]["temperature_uom"].encode("ascii", "ignore")
+            ))
+            self._lcdplate.set_cursor(0, 1)
+            self._lcdplate.message("Tps: {0:.2f} {1} ".format(
+                StationServer.DATA["ms5534"]["temperature"],
+                StationServer.DATA["ms5534"]["temperature_uom"].encode("ascii", "ignore")
+            ))
 
     def background_acquisition(self):
         print "Started sensor acquisition"

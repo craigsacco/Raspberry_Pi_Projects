@@ -15,7 +15,7 @@ class HIH3610OnMAX127(object):
         data = self._adc.get_data()
         humidity = (data["voltage"] - HIH3610OnMAX127.OFFSET_V_0RHpc) / \
                    HIH3610OnMAX127.GAIN_VpRHpc
-        data.update({ "humidity": humidity, "humidity_uom": "%RH" })
+        data.update({ "humidity": humidity, "humidity_uom": u"%RH" })
         return data
 
     def get_humidity(self):
