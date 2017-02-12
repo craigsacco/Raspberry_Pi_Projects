@@ -50,6 +50,15 @@
         return result;
     }
 
+    function dd_to_dms(degrees, p, n)
+    {
+        positive = degrees >= 0.0;
+        d = Math.floor(Math.abs(degrees));
+        m = Math.floor((Math.abs(degrees) - d) * 60);
+        s = Math.floor((Math.abs(degrees) - (d + (m / 60.0))) * 3600);
+        return d + "\u00b0" + m + "'" + s + "\" " + (positive ? p : n);
+    }
+
     function updateData()
     {
         request = new XMLHttpRequest();
@@ -91,8 +100,17 @@
                         response.ms5534.temperature.toFixed(2) + " " + response.ms5534.temperature_uom;
                     document.getElementById("ms5534_data").innerHTML =
                         decompose_json_object(response.ms5534);
+
+                    // GPS
+                    document.getElementById("gps_long").innerHTML =
+                        dd_to_dms(response.gps.TPV.lat, "N", "S");
+                    document.getElementById("gps_lat").innerHTML =
+                        dd_to_dms(response.gps.TPV.lon, "E", "W");
+                    document.getElementById("gps_alt").innerHTML =
+                        response.gps.TPV.alt + " m";
+                    document.getElementById("gps_data").innerHTML =
+                        decompose_json_object(response.gps.TPV);
                 } else {
-                    // DS1624
                     document.getElementById("ds1624").innerHTML = "N/A";
                     document.getElementById("ds1624_data").innerHTML = "No data";
                     document.getElementById("lm35_1").innerHTML = "N/A";
@@ -104,6 +122,10 @@
                     document.getElementById("ms5534_p").innerHTML = "N/A";
                     document.getElementById("ms5534_t").innerHTML = "N/A";
                     document.getElementById("ms5534_data").innerHTML = "No data";
+                    document.getElementById("gps_long").innerHTML = "N/A";
+                    document.getElementById("gps_lat").innerHTML = "N/A";
+                    document.getElementById("gps_alt").innerHTML = "N/A";
+                    document.getElementById("gps_data").innerHTML = "No data";
                 }
             }
         }
@@ -152,6 +174,17 @@
     </tr>
     <tr>
         <td id="ms5534_t"></td>
+    </tr>
+    <tr>
+        <td rowspan="3">GPS</td>
+        <td id="gps_long"></td>
+        <td rowspan="3" id="gps_data"></td>
+    </tr>
+    <tr>
+        <td id="gps_lat"></td>
+    </tr>
+    <tr>
+        <td id="gps_alt"></td>
     </tr>
     </tbody>
 </table>

@@ -59,6 +59,7 @@ connectivity between the Raspberry Pi and a PC via a **Maxim MAX3232** IC.
     through Python
   * **python-spidev** - provides user-mode libraries for accessing an SPI bus
     through Python
+  * **python-gevent** - provides co-routine functionality within Python
   * **gpsd** - provides user-mode access to a NEMA-compatible GPS receiver via
     a TCP socket
     * modify **/etc/default/gpsd** and set **DEVICES** to */dev/ttyUSB0*

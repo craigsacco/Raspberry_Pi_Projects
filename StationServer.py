@@ -1,6 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+# monkey patch python libraries to use co-routines instead of threads
+from gevent import monkey
+monkey.patch_all()
+
+# import libraries from git submodules
 import sys
 sys.path.insert(1, 'Libraries')
 sys.path.insert(1, 'Libraries/Adafruit_Python_PureIO')
@@ -10,7 +15,7 @@ sys.path.insert(1, 'Libraries/geopy')
 sys.path.insert(1, 'Libraries/gps3')
 sys.path.insert(1, 'Libraries/webpy')
 
-import time, web, json, threading
+import web, json, threading, gevent
 from Adafruit_CharLCD import SELECT as LCD_BTN_SELECT
 from Adafruit_CharLCD.Adafruit_CharLCD import Adafruit_CharLCDPlate
 from gps3.gps3 import GPSDSocket
@@ -155,20 +160,21 @@ class StationServer(object):
             self._lcdplate.set_color(0.0, 1.0, 0.0)
             self._lcdplate.set_cursor(0, 0)
             dms_format = "%(degrees)dd %(minutes)dm %(seconds)ds"
-            latitude = format_degrees(StationServer.DATA["gps"]["TPV"]["lat"], fmt=dms_format)
-            longitude = format_degrees(StationServer.DATA["gps"]["TPV"]["lon"], fmt=dms_format)
+            latitude = "N/A"
+            longitude = "N/A"
+            if "lat" in StationServer.DATA["gps"]["TPV"].keys():
+                latitude = format_degrees(StationServer.DATA["gps"]["TPV"]["lat"], fmt=dms_format)
+            if "lon" in StationServer.DATA["gps"]["TPV"].keys():            
+                longitude = format_degrees(StationServer.DATA["gps"]["TPV"]["lon"], fmt=dms_format)
             self._lcdplate.message("La: {0}  ".format(latitude))
             self._lcdplate.set_cursor(0, 1)
             self._lcdplate.message("Ln: {0}  ".format(longitude))
 
     def background_acquisition(self):
         print "Started sensor acquisition"
-        start = time.time()
         while self._running:
-            time.sleep(0.2)
-            if time.time() > start + 2.0:
-                self.update_data()
-                start = time.time()
+            gevent.sleep(2)
+            self.update_data()
         print "Stopped sensor acquisition"
 
     def led_sequencer(self):
@@ -177,7 +183,7 @@ class StationServer(object):
         iteration = 0
         index = 0
         while self._running:
-            time.sleep(0.2)
+            gevent.sleep(0.2)
             if routine == 0:
                 if self._leds[index].get_state():
                     self._leds[index].off()
@@ -213,7 +219,7 @@ class StationServer(object):
                            600, 250, 100]
         index = 0
         while self._running:
-            time.sleep(0.1)
+            gevent.sleep(0.1)
             self._pots.set_both_pots_resistance(pot_resistances[index])
             index += 1
             if index == len(pot_resistances):
@@ -230,7 +236,7 @@ class StationServer(object):
                 StationServer.GPS[packet["class"]] = packet
                 StationServer.GPS_MUTEX.release()
             else:
-                time.sleep(0.1)
+                gevent.sleep(0.1)
             if not self._running:
                 break
         print "Stopped GPS acquisition"
@@ -238,22 +244,17 @@ class StationServer(object):
     def run_server(self):
         self._running = True
         self.start_devices()
-        self._thread1 = threading.Thread(target=self.background_acquisition)
-        self._thread1.start()
-        self._thread2 = threading.Thread(target=self.led_sequencer)
-        self._thread2.start()
-        self._thread3 = threading.Thread(target=self.led_dimmer)
-        self._thread3.start()
-        self._thread4 = threading.Thread(target=self.gps_acquisition)
-        self._thread4.start()
+        self._threads = [
+            gevent.spawn(self.background_acquisition),
+            gevent.spawn(self.led_sequencer),
+            gevent.spawn(self.led_dimmer),
+            gevent.spawn(self.gps_acquisition)
+        ]
         self._server.run()
 
     def stop_server(self):
         self._running = False
-        self._thread1.join()
-        self._thread2.join()
-        self._thread3.join()
-        self._thread4.join()
+        gevent.joinall(self._threads)
         self._server.stop()
         self.stop_devices()
 
