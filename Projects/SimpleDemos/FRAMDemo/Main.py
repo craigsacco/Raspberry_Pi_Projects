@@ -8,21 +8,12 @@ sys.path.insert(1, '../../../Libraries/Adafruit_Python_PureIO')
 sys.path.insert(1, '../../../Libraries/Adafruit_Python_GPIO')
 
 import time
-from DS1624 import DS1624
+from FM25L04B import FM25L04B
 
 
 def main():
-    sensor = DS1624(address=0x48)
-    sensor.start_conversions()
-    try:
-        while True:
-            time.sleep(1)
-            print "Temperature: {0:.3f}C".format(sensor.get_temperature())
-    except KeyboardInterrupt:
-        pass
-    finally:
-        sensor.stop_conversions()
-        return 0
+    fram = FM25L04B(spi_port=0, spi_device=0, gpio_hold=23)
+    print fram.get_status()
 
 
 if __name__ == "__main__":
