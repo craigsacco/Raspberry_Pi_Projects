@@ -59,7 +59,7 @@ connectivity between the Raspberry Pi and a PC via a **Maxim MAX3232** IC.
   * **gpsd** - provides user-mode access to a NEMA-compatible GPS receiver via
     a TCP socket
     * modify **/etc/default/gpsd** and set **DEVICES** to */dev/ttyUSB0*
-    * restart the service by running **sudo systemctl restart gpsd.service**
+    * restart the service by running ```sudo systemctl restart gpsd.service```
 * Use **raspi-config** to do the following:
   * Expand the filesystem to occupy the entire SD card
   * Enable the I<sup>2</sup>C bus kernel module on startup

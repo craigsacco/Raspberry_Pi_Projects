@@ -11,7 +11,7 @@ The **Cypress FM25L04B** ferro-magnetic RAM IC has 512 bytes of non-volatile mem
 with the following pin assignments to the Raspberry Pi:
 * SCK/SI/SO > connected to the SPI0_SCLK, SPI0_MOSI and SPI0_MISO (respectively)
 * /CS > connected to SPI0_CE0
-* /WP > connected to 3.3V
+* /WP > connected to 3.3V (permanently in writeable mode)
 * /HOLD > connected to GPIO23
 
 The device will be accessible under Raspbian as the character device */dev/spidev0.0*
@@ -30,7 +30,18 @@ The device will be accessible under Raspbian as the character device */dev/spide
 
 * Image an SD card using the latest **Raspbian Jessie Lite** release
   (https://www.raspberrypi.org/downloads/raspbian)
-* 
+* The **python-spidev** package in Raspbian is broken (as of 2017-03-11) and a newer
+  version needs to be built and installed from scratch - to install it, run the
+  following commands in a terminal on the Raspberry Pi:
+```
+sudo apt-get update
+sudo apt-get install git python-dev
+git clone https://github.com/doceme/py-spidev.git
+pushd py-spidev
+sudo ./setup.py install
+popd
+rm -rf py-spidev
+```
 * Download the following dependencies using **APT**:
   * **python-spidev** - provides user-mode tools for interacting with the SPI bus
 * Use **raspi-config** to do the following:

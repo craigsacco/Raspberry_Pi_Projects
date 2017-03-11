@@ -10,5 +10,6 @@ connected to a Raspberry Pi.
 The following projects are demonstrated:
 * **Simple Demos** (*Projects/SimpleDemos*) - small demonstration modules for testing devices
   * **DS1624Demo** - a single DS1624 temperature sensor
+  * **FRAMDemo** - a single FM25L04B ferro-magnetic RAM device
 * **Weather Station** (*Projects/WeatherStation*) - weather station demonstration
   with numerous sensors, GPS, a character LCD display and a REST/web interface
