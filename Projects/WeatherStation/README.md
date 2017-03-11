@@ -55,8 +55,6 @@ connectivity between the Raspberry Pi and a PC via a **Maxim MAX3232** IC.
 * Download the following dependencies using **APT**:
   * **i2c-tools** - provides user-mode tools for interacting with the
     I<sup>2</sup>C bus
-  * **python-rpi.gpio** - provides user-mode libraries to the GPIO header
-    through Python
   * **python-spidev** - provides user-mode libraries for accessing an SPI bus
     through Python
   * **python-gevent** - provides co-routine functionality within Python
@@ -67,6 +65,3 @@ connectivity between the Raspberry Pi and a PC via a **Maxim MAX3232** IC.
 * Use **raspi-config** to do the following:
   * Expand the filesystem to occupy the entire SD card
   * Enable the I<sup>2</sup>C bus kernel module on startup
-  * Enable the SPI bus kernel module on startup
-  * **DO NOT** disable the UART (unless you intend to not use it for kernel
-    logging, or as a TTY)
