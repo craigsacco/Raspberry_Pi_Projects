@@ -42,8 +42,6 @@ sudo ./setup.py install
 popd
 sudo rm -rf py-spidev
 ```
-* Download the following dependencies using **APT**:
-  * **python-spidev** - provides user-mode tools for interacting with the SPI bus
 * Use **raspi-config** to do the following:
   * Expand the filesystem to occupy the entire SD card
   * Enable the SPI bus kernel module on startup
