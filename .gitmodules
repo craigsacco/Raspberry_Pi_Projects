@@ -1,9 +1,9 @@
 [submodule "Libraries/Adafruit_Python_GPIO"]
 	path = Libraries/Adafruit_Python_GPIO
-	url = https://github.com/adafruit/Adafruit_Python_GPIO.git
+	url = https://github.com/craigsacco/Adafruit_Python_GPIO.git
 [submodule "Libraries/Adafruit_Python_PureIO"]
 	path = Libraries/Adafruit_Python_PureIO
-	url = https://github.com/adafruit/Adafruit_Python_PureIO.git
+	url = https://github.com/craigsacco/Adafruit_Python_PureIO.git
 [submodule "Libraries/webpy"]
 	path = Libraries/webpy
 	url = https://github.com/webpy/webpy.git
