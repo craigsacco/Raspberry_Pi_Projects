@@ -35,12 +35,12 @@ The device will be accessible under Raspbian as the character device */dev/spide
   following commands in a terminal on the Raspberry Pi:
 ```
 sudo apt-get update
-sudo apt-get install git python-dev
+sudo apt-get install build-essential git python-dev
 git clone https://github.com/doceme/py-spidev.git
 pushd py-spidev
 sudo ./setup.py install
 popd
-rm -rf py-spidev
+sudo rm -rf py-spidev
 ```
 * Download the following dependencies using **APT**:
   * **python-spidev** - provides user-mode tools for interacting with the SPI bus
