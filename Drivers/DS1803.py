@@ -16,16 +16,12 @@ class DS1803(object):
 
     def __init__(self, address=0x28, variant=VARIANT_10K,
                  busnum=None, i2c=None, **kwargs):
-        address = int(address)
-        self.__name__ = \
-            "DS1803" if address in range(0x28, 0x30) else \
-            "Bad address for DS1803: 0x%02X not in range [0x28..0x2F]" % address
-        self.__name__ = \
-            "DS1803" if variant in DS1803.VARIANTS else \
-            "Invalid variant: {0}".format(variant)
-        if self.__name__[0] != 'D':
-            raise ValueError(self.__name__)
+        if address not in range(0x28, 0x30):
+            raise ValueError("DS1803 address must be in range [0x28..0x2F]")
+        if variant not in DS1803.VARIANTS:
+            raise ValueError("DS1803 variant is invalid")
         # Create I2C device.
+        self.__name__ = "DS1803"
         self._address = address
         self._variant = variant
         self._i2c = i2c or I2C

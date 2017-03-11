@@ -15,12 +15,10 @@ class DS1624(object):
 
     def __init__(self, address=0x48, busnum=None, i2c=None, **kwargs):
         address = int(address)
-        self.__name__ = \
-            "DS1624" if address in range(0x48, 0x50) else \
-            "Bad address for DS1624: 0x%02X not in range [0x48..0x4F]" % address
-        if self.__name__[0] != 'D':
-            raise ValueError(self.__name__)
+        if address not in range(0x48, 0x50):
+            raise ValueError("DS1624 address must be in range [0x48..0x4F]")
         # Create I2C device.
+        self.__name__ = "DS1624"
         self._address = address
         self._i2c = i2c or I2C
         self._busnum = busnum or self._i2c.get_default_bus()

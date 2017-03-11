@@ -7,6 +7,7 @@ class LM35OnMAX127(object):
     GAIN_VpC = 0.01
 
     def __init__(self, adc, channel):
+        self.__name__ = "LM35"
         self._adc = adc
         self._channel = channel
 

@@ -6,6 +6,8 @@ import Adafruit_GPIO.GPIO as GPIO
 class SimpleLED(object):
 
     def __init__(self, pin, gpio=None):
+        # create device
+        self.__name__ = "SimpleLED"
         self._gpio = gpio or GPIO.get_platform_gpio()
         self._pin = pin
         self._gpio.setup(self._pin, GPIO.OUT)

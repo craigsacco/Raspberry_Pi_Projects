@@ -15,6 +15,8 @@ class MS5534(object):
     SEQ_TEMPERATURE_CONVERSION = [True, False, False, True]
 
     def __init__(self, sclk, miso, mosi, gpio=None):
+        # create device
+        self.__name__ = "MAX127"
         self._gpio = gpio or GPIO.get_platform_gpio()
         self._sclk = sclk
         self._miso = miso

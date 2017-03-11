@@ -18,21 +18,14 @@ class MAX127(object):
     ADC_REFERENCE = 5.0
 
     def __init__(self, address=0x28, busnum=None, i2c=None, **kwargs):
-        address = int(address)
-        self.__name__ = \
-            "MAX127" if address in range(0x28, 0x30) else \
-            "Bad address for MAX127: 0x%02X not in range [0x28..0x2F]" % address
-        if self.__name__[0] != 'M':
-            raise ValueError(self.__name__)
+        if address not in range(0x28, 0x30):
+            raise ValueError("MAX127 address must be in range [0x28..0x2F]")
         # Create I2C device.
+        self.__name__ = "MAX127"
         self._address = address
         self._i2c = i2c or I2C
         self._busnum = busnum or self._i2c.get_default_bus()
         self._device = self._i2c.get_i2c_device(self._address, self._busnum, **kwargs)
-        # NOTE: this driver requires additional methods not provided by the
-        # Adafruit runtime libraries
-        AdafruitOverrides.add_i2c_device_overrides(self._device)
-        AdafruitOverrides.add_smbus_overrides(self._device._bus)
 
     def send_control_byte(self, value):
         self._device.writeRaw8(MAX127.CTL_START | value)

@@ -7,6 +7,7 @@ class HIH3610OnMAX127(object):
     GAIN_VpRHpc = 0.03068
 
     def __init__(self, adc, channel):
+        self.__name__ = "HIH-3610"
         self._adc = adc
         self._channel = channel
 
