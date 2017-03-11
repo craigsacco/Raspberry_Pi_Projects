@@ -17,7 +17,7 @@ class DS1803(object):
     def __init__(self, address=0x28, variant=VARIANT_10K,
                  busnum=None, i2c=None, **kwargs):
         if address not in range(0x28, 0x30):
-            raise ValueError("DS1803 address must be in range [0x28..0x2F]")
+            raise ValueError("DS1803 I2C address must be in the range [0x28..0x2F]")
         if variant not in DS1803.VARIANTS:
             raise ValueError("DS1803 variant is invalid")
         # Create I2C device.

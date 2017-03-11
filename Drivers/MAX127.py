@@ -19,7 +19,7 @@ class MAX127(object):
 
     def __init__(self, address=0x28, busnum=None, i2c=None, **kwargs):
         if address not in range(0x28, 0x30):
-            raise ValueError("MAX127 address must be in range [0x28..0x2F]")
+            raise ValueError("MAX127 I2C address must be in the range [0x28..0x2F]")
         # Create I2C device.
         self.__name__ = "MAX127"
         self._address = address

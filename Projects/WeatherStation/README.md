@@ -55,8 +55,6 @@ connectivity between the Raspberry Pi and a PC via a **Maxim MAX3232** IC.
 * Download the following dependencies using **APT**:
   * **i2c-tools** - provides user-mode tools for interacting with the
     I<sup>2</sup>C bus
-  * **python-spidev** - provides user-mode libraries for accessing an SPI bus
-    through Python
   * **python-gevent** - provides co-routine functionality within Python
   * **gpsd** - provides user-mode access to a NEMA-compatible GPS receiver via
     a TCP socket
