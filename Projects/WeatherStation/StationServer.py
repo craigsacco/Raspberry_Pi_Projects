@@ -7,13 +7,13 @@ monkey.patch_all()
 
 # import libraries from git submodules
 import sys
-sys.path.insert(1, 'Libraries')
-sys.path.insert(1, 'Libraries/Adafruit_Python_PureIO')
-sys.path.insert(1, 'Libraries/Adafruit_Python_GPIO')
-sys.path.insert(1, 'Libraries/Adafruit_Python_CharLCD')
-sys.path.insert(1, 'Libraries/geopy')
-sys.path.insert(1, 'Libraries/gps3')
-sys.path.insert(1, 'Libraries/webpy')
+sys.path.insert(1, '../../Drivers')
+sys.path.insert(1, '../../Libraries/Adafruit_Python_PureIO')
+sys.path.insert(1, '../../Libraries/Adafruit_Python_GPIO')
+sys.path.insert(1, '../../Libraries/Adafruit_Python_CharLCD')
+sys.path.insert(1, '../../Libraries/geopy')
+sys.path.insert(1, '../../Libraries/gps3')
+sys.path.insert(1, '../../Libraries/webpy')
 
 import web, json, threading, gevent
 from Adafruit_CharLCD import SELECT as LCD_BTN_SELECT
