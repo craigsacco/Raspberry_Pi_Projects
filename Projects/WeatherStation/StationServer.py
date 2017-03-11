@@ -20,13 +20,13 @@ from Adafruit_CharLCD import SELECT as LCD_BTN_SELECT
 from Adafruit_CharLCD.Adafruit_CharLCD import Adafruit_CharLCDPlate
 from gps3.gps3 import GPSDSocket
 from geopy.format import format_degrees
-from Drivers.DS1624 import DS1624
-from Drivers.MAX127 import MAX127
-from Drivers.LM35OnMAX127 import LM35OnMAX127
-from Drivers.HIH3610OnMAX127 import HIH3610OnMAX127
-from Drivers.MS5534 import MS5534
-from Drivers.SimpleLED import SimpleLED
-from Drivers.DS1803 import DS1803
+from DS1624 import DS1624
+from MAX127 import MAX127
+from LM35OnMAX127 import LM35OnMAX127
+from HIH3610OnMAX127 import HIH3610OnMAX127
+from MS5534 import MS5534
+from SimpleLED import SimpleLED
+from DS1803 import DS1803
 
 
 class StationServer(object):
