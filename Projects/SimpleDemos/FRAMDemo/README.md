@@ -8,8 +8,16 @@ to a Raspberry Pi.
 ## Devices
 
 The **Cypress FM25L04B** ferro-magnetic RAM IC has 512 bytes of non-volatile memory
-connected to SPI device 0 connected to port 0 (/CS pin connected to CE0 pin on RPi),
-the write-protect pin is wired to ground and the hold pin connected to GPIO23.
+with the following pin assignments to the Raspberry Pi:
+* SCK/SI/SO > connected to the SPI0_SCLK, SPI0_MOSI and SPI0_MISO (respectively)
+* /CS > connected to SPI0_CE0
+* /WP > connected to 3.3V
+* /HOLD > connected to GPIO23
+
+The device will be accessible under Raspbian as the character device */dev/spidev0.0*
+* the first **0** is the SPI bus number (connected to SPI0)
+* the second **0** is the SPI port number on the bus (connected to the CE0 signal on
+  the bus - bus is normally in tri-state unless the CE0 signal is driven low)
 
 ## Libraries
 
@@ -22,6 +30,7 @@ the write-protect pin is wired to ground and the hold pin connected to GPIO23.
 
 * Image an SD card using the latest **Raspbian Jessie Lite** release
   (https://www.raspberrypi.org/downloads/raspbian)
+* 
 * Download the following dependencies using **APT**:
   * **python-spidev** - provides user-mode tools for interacting with the SPI bus
 * Use **raspi-config** to do the following:
