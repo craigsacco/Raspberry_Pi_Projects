@@ -134,7 +134,7 @@ class M25PX80(object):
         page_remain = 256 - (offset & 0xff)
         data_offset = 0
         while True:
-            chunk_length = min(page_remain, len(data) - data_offset)
+            chunk_length = min(page_remain, len(data)-data_offset)
             chunk_data = data[data_offset:data_offset+chunk_length]
             self.write_page(page_offset, chunk_data, wait)
             data_offset += chunk_length

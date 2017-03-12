@@ -1,4 +1,4 @@
-# EEPROM Demonstration
+# Serial EEPROM Demonstration
 
 ## About
 

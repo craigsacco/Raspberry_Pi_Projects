@@ -4,7 +4,6 @@
 # import libraries from git submodules
 import sys
 sys.path.insert(1, '../../../Drivers')
-sys.path.insert(1, '../../../Libraries/Adafruit_Python_PureIO')
 sys.path.insert(1, '../../../Libraries/Adafruit_Python_GPIO')
 
 from FM25L04B import FM25L04B

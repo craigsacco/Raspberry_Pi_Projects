@@ -4,7 +4,6 @@
 # import libraries from git submodules
 import sys
 sys.path.insert(1, '../../../Drivers')
-sys.path.insert(1, '../../../Libraries/Adafruit_Python_PureIO')
 sys.path.insert(1, '../../../Libraries/Adafruit_Python_GPIO')
 
 from M25PX80 import M25PX80
@@ -21,7 +20,7 @@ def main():
     flash.wait_for_idle()
     assert flash.get_status() == 0
 
-    OFFSET = 0xF8
+    OFFSET = 0xF8  # test around a page/subsector boundary
 
     print "sector erase"
     flash.sector_erase(OFFSET)

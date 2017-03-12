@@ -1,4 +1,4 @@
-# FRAM Demonstration
+# Serial FLASH Demonstration
 
 ## About
 
