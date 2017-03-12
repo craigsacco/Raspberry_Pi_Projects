@@ -50,12 +50,12 @@ class FM25L04B(object):
     def set_spi_hold(self, hold):
         if self._gpio_hold is None:
             raise NotImplementedError("Cannot adjust /HOLD line when not configured")
-        self._gpio.output(self._gpio_hold, GPIO.LOW if hold else GPIO.HIGH)
+        self._gpio.output(self._gpio_hold, GPIO.LOW if hold else GPIO.HIGH)  # active-low
 
     def set_write_protection(self, protect):
         if self._gpio_wp is None:
             raise NotImplementedError("Cannot adjust /WP line when not configured")
-        self._gpio.output(self._gpio_wp, GPIO.LOW if protect else GPIO.HIGH)
+        self._gpio.output(self._gpio_wp, GPIO.LOW if protect else GPIO.HIGH)  # active-low
 
     def get_status(self):
         data = self._device.transfer_half_duplex([FM25L04B.CMD_READ_STATUS], 1)

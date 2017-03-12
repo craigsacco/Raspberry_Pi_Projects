@@ -3,12 +3,18 @@
 ## About
 
 This is a demonstration of a Python script interfacing with an I<sup>2</sup>C
-device connected to a Raspberry Pi.
+temperature sensor device connected to a Raspberry Pi.
 
 ## Devices
 
-The **Maxim DS1624** digital thermometer is being demonstrated. The A0, A1 and A2
-pins are tied to ground, yielding an I<sup>2</sup>C device address of 0x48.
+The **Maxim DS1624** is a digital thermometer with the following pin assignments
+to the Raspberry Pi:
+* SDA/SCL > connected to the I2C#_SDA and I2C#_SCL (respectively)
+  * on the Raspberry Pi 1, pins 3 and 5 are wired to I2C0_SDA and I2C0_SCL
+  * on the Raspberry Pi 2 and 3, pins 3 and 5 are wired to I2C1_SDA and I2C1_SCL
+  * the Adafruit libraries is smart enough to detect the Raspberry Pi variant,
+    and use the appropriate I<sup>2</sup>C bus
+* A0/A1/A2 > connected to GND (I<sup>2</sup>C address set to 0x48)
 
 ## Libraries
 

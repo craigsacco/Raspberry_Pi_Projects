@@ -21,8 +21,6 @@ The device will be accessible under Raspbian as the character device */dev/spide
 
 ## Libraries
 
-* **Adafruit_Python_PureIO** - provides low-level **ioctl**-based access to the
-  I<sup>2</sup>C bus on the Raspberry Pi
 * **Adafruit_Python_GPIO** - provides a flexible wrapper around RPi.GPIO and bus
   interfaces on the Raspberry Pi
 

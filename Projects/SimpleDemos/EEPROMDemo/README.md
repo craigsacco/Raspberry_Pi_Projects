@@ -1,23 +1,21 @@
-# FRAM Demonstration
+# EEPROM Demonstration
 
 ## About
 
-This is a demonstration of a Python script interfacing with an SPI device connected
-to a Raspberry Pi.
+This is a demonstration of a Python script interfacing with an I<sup>2</sup>C
+EEPROM device connected to a Raspberry Pi.
 
 ## Devices
 
-The **Cypress FM25L04B** ferro-magnetic RAM IC has 512 bytes of non-volatile memory
+The **Microchip 24LC256** EEPROM IC has 256-kilobit (32kB) of non-volatile memory
 with the following pin assignments to the Raspberry Pi:
-* SCK/SI/SO > connected to the SPI0_SCLK, SPI0_MOSI and SPI0_MISO (respectively)
-* /CS > connected to SPI0_CE0
-* /WP > connected to 3.3V (permanently in writeable mode)
-* /HOLD > connected to GPIO23
-
-The device will be accessible under Raspbian as the character device */dev/spidev0.0*
-* the first **0** is the SPI bus number (connected to SPI0)
-* the second **0** is the SPI port number on the bus (connected to the CE0 signal on
-  the bus - bus is normally in tri-state unless the CE0 signal is driven low)
+* SDA/SCL > connected to the I2C#_SDA and I2C#_SCL (respectively)
+  * on the Raspberry Pi 1, pins 3 and 5 are wired to I2C0_SDA and I2C0_SCL
+  * on the Raspberry Pi 2 and 3, pins 3 and 5 are wired to I2C1_SDA and I2C1_SCL
+  * the Adafruit libraries is smart enough to detect the Raspberry Pi variant,
+    and use the appropriate I<sup>2</sup>C bus
+* A0/A1/A2 > connected to GND (I<sup>2</sup>C address set to 0x50)
+* WP > connected to GND (permanently in writeable mode)
 
 ## Libraries
 
@@ -30,18 +28,9 @@ The device will be accessible under Raspbian as the character device */dev/spide
 
 * Image an SD card using the latest **Raspbian Jessie Lite** release
   (https://www.raspberrypi.org/downloads/raspbian)
-* The **python-spidev** package in Raspbian is broken (as of 2017-03-11) and a newer
-  version needs to be built and installed from scratch - to install it, run the
-  following commands in a terminal on the Raspberry Pi:
-```
-sudo apt-get update
-sudo apt-get install build-essential git python-dev
-git clone https://github.com/doceme/py-spidev.git
-pushd py-spidev
-sudo ./setup.py install
-popd
-sudo rm -rf py-spidev
-```
+* Download the following dependencies using **APT**:
+  * **i2c-tools** - provides user-mode tools for interacting with the
+    I<sup>2</sup>C bus
 * Use **raspi-config** to do the following:
   * Expand the filesystem to occupy the entire SD card
   * Enable the SPI bus kernel module on startup
