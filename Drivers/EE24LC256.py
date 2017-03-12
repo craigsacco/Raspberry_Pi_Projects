@@ -33,6 +33,7 @@ class EE24LC256(object):
     def read_memory(self, offset, length):
         if offset < 0 or offset >= EE24LC256.MEMORY_SIZE:
             raise ValueError("Offset is too large")
+        # TODO: update the GPIO/PureIO modules to use a bulk transaction using ioctl instead of fnctl
         out = [(offset >> 8) & 0xff, offset & 0xff]
         self._device.writeBytes(out)
         return bytearray(self._device.readBytes(length))

@@ -17,6 +17,7 @@ class FM25L04B(object):
     STATUS_BP1 = 0x08
     STATUS_BP0 = 0x04
     STATUS_WEL = 0x02
+    STATUS_WRITE_MASK = STATUS_BP0 | STATUS_BP1
 
     BP_MODE_NONE = 0x00
     BP_MODE_UPPER_QUARTER = STATUS_BP0
@@ -73,13 +74,14 @@ class FM25L04B(object):
             raise ValueError("Offset is too large")
         out = [FM25L04B.CMD_WRITE_MEMORY | (FM25L04B.CMD_RWMEM_A8_BIT if offset > 0xFF else 0),
                offset & 0xFF] + data
+        self.set_write_enable(enable=True)
         self._device.write(out)
 
     def set_block_protection(self, mode):
         if mode not in FM25L04B.BP_MODES:
             raise ValueError("Block protection mode is not valid")
-        out = [FM25L04B.CMD_WRITE_STATUS,
-               mode & (FM25L04B.STATUS_BP0 | FM25L04B.STATUS_BP1)]
+        out = [FM25L04B.CMD_WRITE_STATUS, mode & FM25L04B.STATUS_WRITE_MASK]
+        self.set_write_enable(enable=True)
         self._device.write(out)
 
     def set_write_enable(self, enable):
