@@ -17,15 +17,15 @@ class MAX127(object):
     ADC_MAX_VALUE = 4095
     ADC_REFERENCE = 5.0
 
-    def __init__(self, address=0x28, busnum=None, i2c=None, **kwargs):
-        if address not in range(0x28, 0x30):
+    def __init__(self, i2c=None, i2c_busnum=None, i2c_address=0x28, **kwargs):
+        if i2c_address not in range(0x28, 0x30):
             raise ValueError("MAX127 I2C address must be in the range [0x28..0x2F]")
         # Create I2C device.
         self.__name__ = "MAX127"
-        self._address = address
         self._i2c = i2c or I2C
-        self._busnum = busnum or self._i2c.get_default_bus()
-        self._device = self._i2c.get_i2c_device(self._address, self._busnum, **kwargs)
+        self._i2c_busnum = i2c_busnum or self._i2c.get_default_bus()
+        self._i2c_address = i2c_address
+        self._device = self._i2c.get_i2c_device(self._i2c_address, self._i2c_busnum, **kwargs)
 
     def send_control_byte(self, value):
         self._device.writeRaw8(MAX127.CTL_START | value)

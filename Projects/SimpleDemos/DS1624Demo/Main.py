@@ -12,7 +12,7 @@ from DS1624 import DS1624
 
 
 def main():
-    sensor = DS1624(address=0x48)
+    sensor = DS1624(i2c_address=0x48)
     sensor.start_conversions()
     try:
         while True:

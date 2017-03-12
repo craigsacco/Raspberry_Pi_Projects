@@ -70,8 +70,8 @@ class StationServer(object):
 
     def __init__(self):
         self._server = web.application(StationServer.URLS, locals())
-        self._ds1624 = DS1624(address=0x48)
-        self._max127 = MAX127(address=0x28)
+        self._ds1624 = DS1624(i2c_address=0x48)
+        self._max127 = MAX127(i2c_address=0x28)
         self._lm35_1 = LM35OnMAX127(adc=self._max127, channel=0)
         self._lm35_2 = LM35OnMAX127(adc=self._max127, channel=1)
         self._hih3610 = HIH3610OnMAX127(adc=self._max127, channel=2)
@@ -82,7 +82,7 @@ class StationServer(object):
         self._leds = [self._led_1, self._led_2, self._led_3]
         self._lcdplate = Adafruit_CharLCDPlate(address=0x20)
         self._dispmode = StationServer.DISPMODE_PRESSURE_HUMIDITY
-        self._pots = DS1803(address=0x29, variant=DS1803.VARIANT_10K)
+        self._pots = DS1803(i2c_address=0x29, variant=DS1803.VARIANT_10K)
         self._gps = GPSDSocket()
 
     def start_devices(self):
