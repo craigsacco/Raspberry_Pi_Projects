@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import Adafruit_GPIO.I2C as I2C
-import AdafruitOverrides
 
 
 class MAX127(object):
